@@ -1,0 +1,22 @@
+<div class="pure-g island content pure-u-1">
+  <form ng-submit="home.charge()" method="POST" id="payment-form">
+    <!-- Add a section to display errors if you want -->
+    <fieldset>
+      <div class="form-group">
+        <span class="input-error" ng-bind="home.error"></span>
+        <br/>
+        <label>credit card number</label><input class="form-control input-primary" data-stripe="number" placeholder="credit card" value="4242424242424242"/>
+        <label>cvc</label><input class="form-control input-primary" data-stripe="cvc" placeholder="cvc" value="111"/>
+        <label>month</label><input class="form-control input-primary" data-stripe="exp-month" placeholder="month" value="01"/>
+        <label>year</label><input class="form-control input-primary" data-stripe="exp-year" placeholder="year" value="2019"/>
+        <label>description</label><input class="form-control input-primary" id="description" placeholder="description" value="Test desc"/>
+        <label>amount</label><input class="form-control input-primary" id="amount" placeholder="amount" value="400"/>
+        <label>currency code</label><input class="form-control input-primary" id="currency" placeholder="currency code" value="usd"/>
+        <br/>
+        <button type="submit">Submit Payment</button>
+        <br/>
+        <span class="" ng-bind="home.success"></span>
+      </div>
+    </fieldset>
+  </form>
+</div>

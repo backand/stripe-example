@@ -1,0 +1,123 @@
+
+
+.form-control {
+    border-width: 1px;
+    box-shadow: none;
+    display: block;
+    margin-bottom: 10px;
+  &[readonly] {
+    cursor: text;
+  }
+}
+
+.form-control:focus {
+    border-color: $skin;
+    box-shadow: none;
+}
+
+.form-group {
+    .col-sm-10 {
+        position: relative;
+        .icon {
+            position: absolute;
+            right: 25px;
+            top: 10px;
+        }
+    }
+
+}
+
+.input-error {
+  text-align: left;
+  color: red;
+}
+
+.input-round {
+    border-radius: 25px;
+}
+
+input.input-primary {
+    border-color: $skin;
+    &:focus {
+        border-color: $skin;
+    }
+}
+input.input-info {
+    border-color: $brand-info;
+    &:focus {
+        border-color: $brand-info;
+    }
+}
+input.input-success {
+    border-color: $brand-success;
+    &:focus {
+        border-color: $brand-success;
+    }
+}
+input.input-warning {
+    border-color: $brand-warning;
+    &:focus {
+        border-color: $brand-warning;
+    }
+}
+input.input-danger {
+    border-color: $brand-danger;
+    &:focus {
+        border-color: $brand-danger;
+    }
+}
+
+// Drag and drop
+.drop-box {
+    width: 100%;
+    height: 100px;
+    padding-top: 40px;
+    background: #F8F8F8;
+    border: 2px dashed #DDD;
+    text-align: center;
+    padding-top: 35px;
+    border-radius: $border-radius-base;
+}
+
+.form-group {
+  label {
+    font-weight:normal;
+    &.strong {
+      font-weight:bold;
+    }
+  }
+  &.border-bottom {
+    border-bottom:1px solid #ccc;
+    margin-bottom:10px;
+    padding-bottom:10px;
+  }
+
+  &.form-group-half {
+    float:left;
+    width:49%;
+    margin-left:1%;
+    @media screen and (max-width:980px) {
+      width:100%;
+      margin:0;
+      clear:both;
+      float:none;
+
+    }
+    &:nth-child(odd) {
+      clear:both;
+      margin-left:0%;
+      margin-right:1%;
+      @media screen and (max-width:980px) {
+        margin:0;
+
+      }
+
+    }
+  }
+  .field-description {
+    font-size:12px;
+    margin-top:3px;
+  }
+
+
+}

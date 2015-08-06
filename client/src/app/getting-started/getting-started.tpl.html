@@ -1,0 +1,43 @@
+<div class="pure-g island3">
+  <div class="content pure-u-1">
+    <h1>Backand starting point</h1>
+    <hr/>
+    <h3>Login - This section connects your code to a Back& app</h3>
+    <div>
+      <label class="pure-u-1-12" title="If you do not have an app, please sign up to backand.com and create one.">App Name:</label>
+      <input class="pure-u-1-4" type="text" ng-model="start.appName" placeholder="Your Backand app name" title="If tou do not have an app, please sign up to backand.com and create one.">
+      <label class="pure-u-1-12" title="If you do not have an app, please sign up to backand.com and create one.">(?)</label>
+    </div>
+    <div>
+      <label class="pure-u-1-12">Username:</label>
+      <input class="pure-u-1-4" type="text" ng-model="start.username" placeholder="Your Backand username">
+    </div>
+    <div>
+      <label class="pure-u-1-12">Password:</label>
+      <input class="pure-u-1-4" type="password" ng-model="start.password" placeholder="Your Backand password">
+    </div>
+    <br/>
+    <div>
+      <div class="pure-u-1-12"></div>
+      <button class="pure-u-1-4" ng-click="start.signin()" ng-if="!start.isLoggedIn">Sign In</button>
+      <button class="pure-u-1-4" ng-click="start.signout()" ng-if="start.isLoggedIn">Sign Out</button>
+      <a class="pure-u-1-4" href="https://www.backand.com/apps/#/sign_up" target="_blank"> ---> I need a Back& app</a>
+    </div>
+    <br/>
+    <label>Status: {{start.results}}</label>
+    <hr/>
+
+    <h3 ng-if="!start.isLoggedIn">List of Objects - Example of using configuration API (Must sign in first)</h3>
+    <h3 ng-if="start.isLoggedIn">List of Objects - Example of using configuration API</h3>
+    <select class="form-control"
+            ng-options="object.name as object.name for object in start.objects"
+            ng-model="start.objectSelected"
+            ng-model-options="{debounce:{default:100}}"
+            ng-change="start.loadObjectData()">
+      <option value="">Select an object</option>
+    </select>
+    <hr/>
+    <h3>Object - Example of using data API</h3>
+    <pre>{{start.objectData | json}}</pre>
+  </div>
+</div>
