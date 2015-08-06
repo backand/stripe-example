@@ -103,15 +103,14 @@ You are now ready to view the app, your application is available at **[http://lo
 
   
 ## Code Review
-These are the places you would need to copy to your app in order for Stripe to work with Backand 
+Review the following code and copy it to your app in order for Stripe to work with Backand
 
 #### Update publish key
 
-Open **client/src/app/app.js** file and update your publish Stripe key. You can copy it from this URL: https://dashboard.stripe.com/account/apikeys
-You can use Backand test account, The resulting code will look like the following:
+In **client/src/app/app.js** file update your publish Stripe key. You can copy it from this URL: https://dashboard.stripe.com/account/apikeys or you can use Backand test account.
+The resulting code will look like the following:
 
 ```javascript
-
     .config(function (stripeProvider) {
       //Enter your Stripe publish key or use Backand test account
       stripeProvider.setPublishableKey('pk_test_pRcGwomWSz2kP8GI0SxLH6ay');
@@ -120,12 +119,57 @@ You can use Backand test account, The resulting code will look like the followin
 ```
 
 #### Calling stripe.js file to submit payment
-The method **self.charge** in file **/client/src/app/home/home.js** gets the form's data make a call to stripe, gets the token and call Backand Action.
+The method **self.charge** in file **/client/src/app/home/home.js** gets the form's data and make a call to stripe, gets the token and calls Backand Action.
+
+```javascript
+    self.charge = function(){
+
+      self.error = "";
+      self.success = "";
+
+      //get the form's data
+      var form = angular.element(document.querySelector('#payment-form'))[0];
+
+      //Use angular-stripe service to get the token
+      return stripe.card.createToken(form)
+        .then(function (token) {
+          console.log('token created for card ending in ', token.card.last4);
+
+          //Call Backand action to make the payment
+          return BackandService.makePayment(form.amount.value, token.id )
+        })
+        .then(function (payment) {
+          self.success = 'successfully submitted payment for $' + payment.data.data.amount/100;
+        })
+        .catch(function (err) {
+          if (err.type && /^Stripe/.test(err.type)) {
+            self.error = 'Stripe error: ' +  err.message;
+          }
+          else {
+            self.error = 'Other error occurred, possibly with your API' + err.message;
+          }
+        });
+    }
+```
 
 #### Backand service to call to on-demand action
-The method **factory.makePayment** in the file **/client/src/common/services/backandService.js** calls the on-demand action.
-You must send the token and the amount but you can also send more parameters as needed.
+The method **factory.makePayment** in file **/client/src/common/services/backandService.js** calls the on-demand action.
+You must send the **token** and **amount**, and you can also send more parameters as needed.
 
+```javascript
+    factory.makePayment = function(amount, token){
+      return $http({
+        method: 'GET',
+        url: Backand.getApiUrl() + '/1/objects/action/items?name=makePayment',
+        params:{
+          parameters:{
+            token: token,
+            amount: amount
+          }
+        }
+      });
+    }
+```
 
 ### License
 
