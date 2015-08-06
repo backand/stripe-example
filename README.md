@@ -1,89 +1,132 @@
-# [backand-angular-kickstart](https://github.com/backand/angular-kickstart/)
-
-**Speed up your [AngularJS](http://angularjs.org) development with a complete and scalable gulpjs based build system that scaffolds the project for you. Just focus on your app, angular-kickstart will take care of the rest.**
-***
+# [backand-stripe-example](https://github.com/backand/stripe-example/)
 
 ### What and Why
 
-There is no doubt that AngularJS has earned its place as one of the most powerful JavaScript frameworks available. The ability to quickly and sanely create production grade web applications with AngularJS has opened up a whole new frontier of possibilities for developers around the world. With Backand, you can take this to an entirely new level by quickly and painlessly adding a powerful backend to your AngularJS application. Come join us as we take an existing RESTful application and convert it to use Backand's cloud-based services in minutes. We will also show how we can easily customize security, send emails or notifications, apply app rules and call other apps via HTTP. There has never been a better time to build better things faster!
+Example app demonstrating the work with Stripe and Backand. Whether you’re building a marketplace, mobile app, online storefront, or subscription service, Stripe has the features you need.
 
-### Getting started
+With payment system you always need a backend to keep your customer secured.
+
+In this example we use: **angular-stripe** to wrap the stripe.js file, feel free to replace it with any other solution.
+
+## Prerequisites
 
 Install **node.js**. Then **gulp** and **bower** if you haven't yet.
 
     $ npm -g install gulp bower
+    
+## Getting started
 
-After that, install angular-kickstart downloading the [master release](https://github.com/backand/angular-kickstart/archive/master.zip) (or clone the master branch if you want to run the development version). 
+First, we'll create an account with Backand and create our base app:
 
-    $ git clone https://github.com/backand/angular-kickstart.git
-    $ cd angular-kickstart
+* Navigate to [backand.com](https://www.backand.com/) and click `Sign Up`
+* Create an app (named whatever you want)
+* Click on your new app's URL. Don't navigate away from the next page.
+
+Once an account has been created, we're ready to start building out the backend. In the "New Hosted Database" keep the default JSON and just click 'Next'.
+
+After that, clone the source code: 
+
+```bash
+    $ git clone https://github.com/backand/stripe-example.git
+    $ cd stripe-example
+```
     
 Install bower and npm dependencies, and run the application in development mode.
 
+```bash
     $ npm install
     $ bower install
+```
+
+Before running the app, we need to change a few items in the app's code. Open the file **client/src/app/app.js** in a text editor, and make the following changes:
+
+  * Replace **'Your-App-Name'** with the new app name you chose when creating your Backand account
+  * Replace **'Your-Anonymous-Token'** with your application's Anonymous token:
+    1. In Backand dashboard, under "Security & auth --> Configuration," enable Anonymous Access by clicking on the toggle on the right side of the page.
+    2. Set the Anonymous users assigned role to 'User' in the provided drop down box.
+    3. Copy the Anonymous Token from the text box in the Anonymous access section.
+    4. Replace **Your-Anonymous-Token** with the value copied from the Backand dashboard.
+  
+
+## Configuring the App
+
+1. Log in to [Backand](https://www.backand.com) using your admin login information
+2. Open the application that you created in the previous section.
+
+### Backand Action
+
+Use the following steps to add the on-demand action that makes the payment to Stripe:
+
+1. Open the Action tab for the items object (which can be found under the "Objects" menu in the Backand dashboard)
+2. Click "+New Action" and enter the following details in the fields provided. Note that some fields won't be available until the prior step has been completed:
+  1. Name: makePayment
+  2. Event Trigger: 'On Demand - Execute via REST API'
+  3. Type: Server Side JavaScript Code
+  4. Input Parameters: amount, token
+  5. JavaScript Code: Past this code under the `// write your code here` comment, and before the `return {}` command
+
+    ```javascript
+        
+        //Secret key - copy from your Stripe account https://dashboard.stripe.com/account/apikeys
+        //or user Backand test account
+        var user = btoa("sk_test_hx4i19p4CJVwJzdf7AajsbBr:");
+                
+        response = $http({
+          method: "POST",
+          url: "https://api.stripe.com/v1/charges",
+          params: {
+              "amount":parameters.amount,
+              "currency":"usd",
+              "source": parameters.token
+          },
+          headers: {
+              "Authorization": "Basic " + user,
+              "Accept" : "application/json",
+              "Content-Type": "application/x-www-form-urlencoded"
+          }
+        });
+        
+    	return {"data":response};
+    ```
+
+  5. Save
+  
+## Run the app
+  
+Now we're ready to run the app! In your terminal window, simply type:
+
+```bash    
     $ gulp serve
+```
 
-You are now ready to go, your application is available at **http://127.0.0.1:3000**.
+You are now ready to view the app, your application is available at **[http://localhost:3000](http://localhost:3000)**.
 
-**Every file you add, edit or delete into the `/client` folder will be handled by the build system**.
+  
+## Code Review
+These are the places you would need to copy to your app in order for Stripe to work with Backand 
 
-When you are ready to build a production release there is a task for that:
+#### Update publish key
 
-    $ gulp serve:dist
+Open **client/src/app/app.js** file and update your publish Stripe key. You can copy it from this URL: https://dashboard.stripe.com/account/apikeys
+You can use Backand test account, The resulting code will look like the following:
 
-This task will lint your code, optimize css js and images files, run unit tests. After the task has successfully finished, you can find an optimized version of your project inside the  `/build/dist` folder.
+```javascript
 
-### Features
+    .config(function (stripeProvider) {
+      //Enter your Stripe publish key or use Backand test account
+      stripeProvider.setPublishableKey('pk_test_pRcGwomWSz2kP8GI0SxLH6ay');
+    })
+      
+```
 
-* Backand SDK included, just sign in to your app and the entire back-end is ready.
-* 5 simple task: `gulp serve`,`gulp serve:dist`, `gulp serve:tdd`, `gulp test:unit`, `gulp test:e2e`
-* JavaScript file continuous linting with `jshint`.
-* SASS continuous compiling.
-* `Unit` and `e2e` testing support. (for `e2e` testing you need to have a java runtine installed, take a look at [selenium JavaScript api ](http://selenium.googlecode.com/git/docs/api/javascript/index.html) and [protractor](https://github.com/angular/protractor) for more informations.
-* HTML templates converted into strings and attached to a single javascript file (to avoid one http call for each template).
-* Livereload provided by [browsersync](http://www.browsersync.io/).
-* angular module dependencies automatically injected using [ng-annotate](https://github.com/olov/ng-annotate).
-* Static resources minification and optimization for production.
-* sourcemaps generated and embedded in JavaScript and css files during the production optimization.
+#### Calling stripe.js file to submit payment
+The method **self.charge** in file **/client/src/app/home/home.js** gets the form's data make a call to stripe, gets the token and call Backand Action.
 
-### Directory Structure
+#### Backand service to call to on-demand action
+The method **factory.makePayment** in the file **/client/src/common/services/backandService.js** calls the on-demand action.
+You must send the token and the amount but you can also send more parameters as needed.
 
-* `build/` - Build files and configuration, the most important files to note are `build.config.js`, `protractor.config.js` and `karma.config.js`. These files are the heart of the build system. Take a look.
-* `client/` the source code and tests of your application, take a look at the modules in this folder, you should structure your application following those conventions, but you can choose another convention as well.
-* `.bowerrc` - the bower configuration file. This tells Bower to install components in the `client/src/vendor` directory.
-* `.jshintrc` - JSHint configuration.
-* `gulpfile` - see [The Build System](#thebuildsystem) below.
-* `bower.json` - Contains the list of bower dependencies.
-* `package.json` - node.js dependencies.
-
-### <a name="thebuildsystem"></a>The Build System
-
-There are some `tasks` available in `gulpfile.js`. You can dig into the file to familiarize yourself with gulpjs.
-
-A description of every available task:
-
-* **gulp serve** - When this task runs, the build will take care of watching files. Every time you change a file in the `client/` folder, the build recompiles every file, and your browser will reload automagically showing you the changes.
-You just need to add new JavaScript and css files in the `client/index.html` file.
-* **gulp serve:dist** - This task will run jshint and unit tests under the `client/test/unit` folder (thanks to `karma runner`), and create a fully-optimized version of your application under the `build/dist/` folder. The optimization consists of concatenate, minify and compress js and css files, optimize images, and put every template into a js file loaded by the application.
-A code coverage report will be available inside the `client/test/unit-results`.
-* **gulp serve:tdd** - Just like `gulp serve` but in continuous unit testing environment.
-* **gulp test:unit** - For running unit tests one time then exit.
-* **gulp test:e2e** - Run end-to-end tests inside the `client/test/e2e` folder with `protractor`. If a test fails, you should find a screenshot of the page inside the `client/test/screenshots` folder.
-**Note that you need to have the application running in order to run e2e tests. You can launch this task from another terminal instance.**
-
-### Contributing
-
-PR and issues reporting are always welcome :)
 
 ### License
 
 See LICENSE file
-
-### Changelog
-
-See CHANGELOG.md file
-
-### Thank you, community!
-
-All this wouldn't have been possible without these great [contributors](https://github.com/vesparny/angular-kickstart/graphs/contributors) and everybody who comes with new ideas and suggestions.

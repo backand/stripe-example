@@ -35,13 +35,16 @@
       self.error = "";
       self.success = "";
 
+      //get the form's data
       var form = angular.element(document.querySelector('#payment-form'))[0];
 
+      //Use angular-stripe service to get the token
       return stripe.card.createToken(form)
         .then(function (token) {
           console.log('token created for card ending in ', token.card.last4);
 
-          return BackandService.paymentExample(form.amount.value, token.id )
+          //Call Backand action to make the payment
+          return BackandService.makePayment(form.amount.value, token.id )
         })
         .then(function (payment) {
           self.success = 'successfully submitted payment for $' + payment.data.data.amount/100;

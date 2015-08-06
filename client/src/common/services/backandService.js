@@ -31,10 +31,11 @@
       });
     }
 
-    factory.paymentExample = function(amount, token){
+    //Call makePayment on demand action
+    factory.makePayment = function(amount, token){
       return $http({
         method: 'GET',
-        url: Backand.getApiUrl() + '/1/objects/action/items?name=stripe',
+        url: Backand.getApiUrl() + '/1/objects/action/items?name=makePayment',
         params:{
           parameters:{
             token: token,

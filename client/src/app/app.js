@@ -6,14 +6,13 @@
   });
 
   function config(BackandProvider, $stateProvider, $urlRouterProvider, $logProvider, $httpProvider) {
+
     $urlRouterProvider.otherwise('/');
     $logProvider.debugEnabled(true);
 
     BackandProvider.manageDefaultHeaders();
-    BackandProvider.setAppName('integration');
-    //BackandProvider.setSignUpToken('898c2d9f-a493-4b4a-ab82-4c564170a5f4');
-    BackandProvider.setAnonymousToken('4f81b419-e533-4f2b-8d2d-86fda2824b90');
-
+    BackandProvider.setAppName('Your-App-Name');
+    BackandProvider.setAnonymousToken('Your-Anonymous-Token');
 
     $httpProvider.interceptors.push('httpInterceptor');
     $stateProvider
@@ -57,6 +56,7 @@
     ])
     .config(config)
     .config(function (stripeProvider) {
+      //Enter your Stripe publish key or use Backand test account
       stripeProvider.setPublishableKey('pk_test_pRcGwomWSz2kP8GI0SxLH6ay');
     })
     .run(run)
