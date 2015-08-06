@@ -157,18 +157,18 @@ The method **factory.makePayment** in file **/client/src/common/services/backand
 You must send the **token** and **amount**, and you can also send more parameters as needed.
 
 ```javascript
-    factory.makePayment = function(amount, token){
-      return $http({
-        method: 'GET',
-        url: Backand.getApiUrl() + '/1/objects/action/items?name=makePayment',
-        params:{
-          parameters:{
-            token: token,
-            amount: amount
-          }
+  factory.makePayment = function(amount, token){
+    return $http({
+      method: 'GET',
+      url: Backand.getApiUrl() + '/1/objects/action/items?name=makePayment',
+      params:{
+        parameters:{
+          token: token,
+          amount: amount
         }
-      });
-    }
+      }
+    });
+  }
 ```
 
 ### License
