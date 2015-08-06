@@ -50,7 +50,7 @@
           self.success = 'successfully submitted payment for $' + payment.data.data.amount/100;
         })
         .catch(function (err) {
-          if (err.type && /^Stripe/.test(err.type)) {
+          if (err.type) {
             self.error = 'Stripe error: ' +  err.message;
           }
           else {
