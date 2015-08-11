@@ -173,6 +173,30 @@ The method **factory.makePayment** in the file **/client/src/common/services/bac
     });
   }
 ```
+## Adding additional functionality
+
+After reviewing the code, you should have noticed that, under the covers, all that we are really doing is wrapping [Stripe's REST API](https://stripe.com/docs/api#intro). This API is provided both as a series of language libraries (there are versions for Ruby, Python, Go, and other languages), and as a series of HTTP endpoints. In fact, the code-based libraries simply wrap calls to the Stripe HTTP endpoints, giving you convenient function calls instead of HTTP request and response code to handle the functionality.
+
+What this means is that, when adding new functionality, we can handle it through a back-end custom action however we see fit. As we are simply using JavaScript to fire off HTTP requests at Stripe's API, we can easily add additional calls to enhance our application. Explore Stripe's API docs in order to see what exactly is available to your app.
+
+## A Note on Security
+
+As Stripe is a payments platform, user security will be high on the list of priorities for developers using Backand to drive a Stripe integration. Below are a few notes on the security concerns associated with a payments platform, and details on how Backand addresses these issues.
+
+#### PCI DSS Compliance
+
+One of the first issues faced by any company taking payment information from customers is the need for compliance with the Payment Card Industry Data Security Standard, or [PCI DSST](https://en.wikipedia.org/wiki/Payment_Card_Industry_Data_Security_Standard). This is a set of standards developed by the payment card industry for all companies handling processing of charges for major brand credit cards. It consists of a number of security standards that your organization must meet, based upon your level of integration. Being compliant with PCI DSS is a vital step in deploying a payments application. [This site](http://pcidsscompliance.net/) has more info on compliance data.
+
+The reason this is mentioned is that through Backand's solution, you get major portions of PCI-DSS for basically free. Stripe's JS is hosted on Stripe's servers, meaning that any payment data sent from the front end (in the payment tokenization call) is already being handled in a secure environment on a secure and certified-compliant machine. As we never physically pull down the Stripe.js file into our project's code, and instead link to the script on Stripe's servers, we can piggyback off of Stripe's compliance and use that in place of our own.
+
+#### Backend Data Concerns
+
+While the tokenization on the front-end of our application handles many of the security concerns for handling customer payment data, it is important to note that our back-end - through Backand's application - needs to be verified as well. While the above PCI-DSS information is useful for making sure the back end is compliant, there are a few important things to note:
+
+* You cannot store complete credit card numbers on back-end servers. It is possible to do so, but attempting to store this data requires a much more robust security infrastructure than this application provides.
+* You also cannot store the CVV code (the number on the back of the card) on your back-end servers. Once again, it's possible to do so if you are willing to take substantial ownership of the back-end, but most payment application's won't actually need this data
+
+Additionally, it's important to note that the method we use with Stripe creates a single-use token. You can store the token, but it can only be used for a charge once. Review Stripe's API documentation for more info on how to generate multi-use tokens for your users.
 
 ### License
 
