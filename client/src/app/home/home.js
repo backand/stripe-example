@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   /**
@@ -14,13 +14,30 @@
             templateUrl: 'src/app/home/home.tpl.html',
             controller: 'HomeCtrl as home',
             resolve: {
-              data: function(DataService) {
+              data: function (DataService) {
                 return DataService.get();
               }
             }
           }
+
+        }
+      })
+      .state('root.paypal', {
+        url: '/paypal',
+        views: {
+          '@': {
+            templateUrl: 'src/app/paypal/paypal.tpl.html',
+            controller: 'PayPalCtrl as payPal',
+            resolve: {
+              data: function (DataService) {
+                return DataService.get();
+              }
+            }
+          }
+
         }
       });
+
   }
 
   /**
@@ -30,7 +47,7 @@
   function HomeCtrl(stripe, BackandService) {
     var self = this;
 
-    self.charge = function(){
+    self.charge = function () {
 
       self.error = "";
       self.success = "";
@@ -44,16 +61,15 @@
           console.log('token created for card ending in ', token.card.last4);
 
           //Call Backand action to make the payment
-          return BackandService.makePayment(form.amount.value, token.id )
+          return BackandService.makePayment(form.amount.value, token.id)
         })
         .then(function (payment) {
-          self.success = 'successfully submitted payment for $' + payment.data.data.amount/100;
+          self.success = 'successfully submitted payment for $' + payment.data.data.amount / 100;
         })
         .catch(function (err) {
           if (err.type) {
-            self.error = 'Stripe error: ' +  err.message;
-          }
-          else {
+            self.error = 'Stripe error: ' + err.message;
+          } else {
             self.error = 'Other error occurred, possibly with your API' + err.message;
           }
         });
@@ -64,5 +80,5 @@
 
   angular.module('home', [])
     .config(config)
-    .controller('HomeCtrl',['stripe','BackandService', HomeCtrl]);
+    .controller('HomeCtrl', ['stripe', 'BackandService', HomeCtrl]);
 })();

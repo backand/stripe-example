@@ -16,12 +16,12 @@
           sort: '[{fieldName:"captionText", order:"asc"}]'
         }
       });
-    }
+    };
 
     factory.objectData = function(name, pageSize, pageNumber, sort, filter) {
       return $http({
         method: 'GET',
-        url: Backand.getApiUrl() + '/1/objects/' + name,
+        url: Backand.getApiUrl() +  '/1/objects/' + name,
         params: {
           pageSize: pageSize || 5,
           pageNumber: pageNumber || 1,
@@ -29,13 +29,13 @@
           sort: sort || ''
         }
       });
-    }
+    };
 
     //Call makePayment on demand action
     factory.makePayment = function(amount, token){
       return $http({
         method: 'GET',
-        url: Backand.getApiUrl() + '/1/objects/action/items?name=makePayment',
+        url:  Backand.getApiUrl() + '/1/objects/action/items?name=makePayment',//
         params:{
           parameters:{
             token: token,
@@ -43,8 +43,33 @@
           }
         }
       });
-    }
+    };
+    //Call PayPalPayment on demand action
+    factory.makePayPalPayment = function(amount){
+      return $http({
+        method: 'GET',
+        url: Backand.getApiUrl()  +  '/1/objects/action/items/1?name=PayPalPayment',
+        params:{
+          parameters:{
+            amount: amount
+          }
+        }
+      });
+    };
 
+    //Call PayPalApproval on demand action
+    factory.makePayPalApproval = function(payerId,paymentId){
+      return $http({
+        method: 'GET',
+        url: Backand.getApiUrl() +  '/1/objects/action/items/1?name=PayPalApproval',
+        params:{
+          parameters:{
+            payerId: payerId,
+            paymentId:paymentId
+          }
+        }
+      });
+    };
     return factory;
 
   }

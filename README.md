@@ -1,6 +1,6 @@
-# [backand-stripe-example](https://github.com/backand/stripe-example/)
+# [backand-Payment-example (Stripe/PayPal)](https://github.com/backand/stripe-example/)
 
-### Quick-and-Easy Third Party Integration With Stripe
+### Quick-and-Easy Third Party Integration With Stripe and PayPal
 
 This is an example app demonstrating how to integrate Stripe with a Backand application. Stripe is a popular third-party API offering payment-related functionality, allowing you to accept payments for yourself as well as your customers. Whether you’re building a marketplace, mobile app, online storefront, or subscription service, [Stripe](https://stripe.com) has the features you need.
 
@@ -57,6 +57,10 @@ Below we'll configure your Backand application. To get started:
 1. Log in to [Backand](https://www.backand.com) using your admin login information
 2. Open the application that you created in the previous section.
 
+# Stripe
+
+For Paypal integration please see [here](#paypal)
+ 
 ### Backand Action
 
 Use the following steps to add an on-demand action that registers a payment with Stripe:
@@ -197,6 +201,281 @@ While the tokenization on the front-end of our application handles many of the s
 * You also cannot store the CVV code (the number on the back of the card) on your back-end servers. Once again, it's possible to do so if you are willing to take substantial ownership of the back-end, but most payment application's won't actually need this data
 
 Additionally, it's important to note that the method we use with Stripe creates a single-use token. You can store the token, but it can only be used for a charge once. Review Stripe's API documentation for more info on how to generate multi-use tokens for your users.
+
+# PayPal
+
+### Backand Action
+
+Use the following steps to add an on-demand action that registers a payment with PayPal:
+
+1. Open the Action tab for the `items` object (which can be found under the "Objects" menu in the Backand dashboard)
+2. Click "+New Action" and enter the following details in the fields provided. Note that some fields for a step won't be available until the prior step has been completed:
+  1. **Name:** PayPalPayment
+  2. **Event Trigger:** 'On Demand - Execute via REST API'
+  3. **Type:** Server Side JavaScript Code
+  4. **Input Parameters:** amount
+  5. **JavaScript Code:** Past this code under the `// write your code here` comment, and before the `return {}` command
+
+    ```javascript
+      //Secret key and ClientId - copy from your PayPal account click on the app here https://developer.paypal.com/developer/applications/  
+      //or use Backand's test account
+      // for paying , use can use the account credentials  username:paypalTest1@backand.com password:12345678 
+      var paypalUrl='https://api.sandbox.paypal.com/';
+    	var getAccessToken = function(){
+                var token = cookie.get('paypal_token'); 
+                if (!token) { 
+                    var ClientId = 'AeRyp1axlX-6Lr730vW1mUA3Q5iKz9NOWFkGuZG1ws6vpGZ1a_5O20y3CIp6RYekmr0ilfkWBXpkwsHR'; 
+                    var Secret = 'ELKeNR8vXKRT6JxAVHJZVHWxcS2GUrGxxwnJeiddaKKDQ6ZXWhZe7d-1H6toxBaOoO3uhS41i50QlyYy'; 
+                    var user =  btoa(ClientId + ":" + Secret); 
+                    try{
+                        token = $http(
+                            {
+                                method:'POST',
+                                url:paypalUrl+'v1/oauth2/token',
+                                data:'grant_type=client_credentials',
+                                headers:{
+                                    "Accept-Language":"en_US",
+                                    "Authorization":"Basic " + user
+                                    }
+                                
+                            });
+                    } 
+                    catch(err){
+                        if (err.name == 401){
+                            var e = new Error("Unauthorized (401), check client id and secret"); 
+                            e.name = err.name;
+                            throw e;
+                        }
+                        else{
+                            throw err;
+                        }
+                    }
+                    cookie.put('paypal_token',token);
+                }
+                return token;
+            };
+        var postPayment = function(){
+            authorization = "Bearer " + getAccessToken().access_token;
+            var payment = {
+                "intent":"sale",
+                "redirect_urls":{
+                    "return_url":"http://localhost:3000/#/paypal",
+                    "cancel_url":"http://localhost:3000/#/paypal?fail=true"
+                },
+                "payer":{"payment_method":"paypal"},
+                "transactions":[
+                    {"amount":
+                        {
+                            "total":parameters.amount,
+                            "currency":"USD"
+                        }
+                        
+                    }
+                ]
+                
+            };
+                return $http({
+                    method:'POST',
+                    url:paypalUrl+'v1/payments/payment',
+                    data:payment,
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Accept-Language":"en_US",
+                        "Authorization":authorization
+                        
+                    }});
+            }
+        try{
+            
+            var payment= postPayment();
+             cookie.put(payment.id,dbRow.Id);
+          return payment.links[1].href;
+        }
+        catch(err){
+            
+            if (err.name == 401){
+                cookie.remove('paypal_token');
+                var payment= postPayment();
+                cookie.put(payment.id,dbRow.Id);
+                return payment;
+            }
+            else{
+                throw err;
+            }
+        }
+    ```
+
+  6. Press "Save"
+  
+3. Click "+New Action" and enter the following details in the fields provided. Note that some fields for a step won't be available until the prior step has been completed:
+  1. **Name:** PayPalApproval
+  2. **Event Trigger:** 'On Demand - Execute via REST API'
+  3. **Type:** Server Side JavaScript Code
+  4. **Input Parameters:** amount
+  5. **JavaScript Code:** Past this code under the `// write your code here` comment, and before the `return {}` command
+
+    ```javascript
+      //Secret key and ClientId - copy from your PayPal account click on the app here https://developer.paypal.com/developer/applications/  
+      //or use Backand's test account
+      // for paying , use can use the account credentials  username:paypalTest1@backand.com password:12345678 
+      var paypalUrl='https://api.sandbox.paypal.com/';
+     	var getAccessToken = function(){
+                 var token = cookie.get('paypal_token'); 
+                 if (!token) { 
+                     var ClientId = 'AeRyp1axlX-6Lr730vW1mUA3Q5iKz9NOWFkGuZG1ws6vpGZ1a_5O20y3CIp6RYekmr0ilfkWBXpkwsHR'; 
+                     var Secret = 'ELKeNR8vXKRT6JxAVHJZVHWxcS2GUrGxxwnJeiddaKKDQ6ZXWhZe7d-1H6toxBaOoO3uhS41i50QlyYy'; 
+                     var user =  btoa(ClientId + ":" + Secret); 
+                     try{
+                         token = $http(
+                             {
+                                 method:'POST',
+                                 url:paypalUrl+'v1/oauth2/token',
+                                 data:'grant_type=client_credentials',
+                                 headers:{
+                                     "Accept-Language":"en_US",
+                                     "Authorization":"Basic " + user
+                                     }
+                                 
+                             });
+                     } 
+                     catch(err){
+                         if (err.name == 401){
+                             var e = new Error("Unauthorized (401), check client id and secret"); 
+                             e.name = err.name;
+                             throw e;
+                         }
+                         else{
+                             throw err;
+                         }
+                     }
+                     cookie.put('paypal_token',token);
+                 }
+                 return token;
+             };
+             var postApproval = function(){
+              authorization = "Bearer " + getAccessToken().access_token;
+             var payer = {"payer_id":parameters.payerId};
+            
+             return $http({
+                 method:'POST',
+                 url:paypalUrl+ 'v1/payments/payment/' + parameters.paymentId + '/execute/',
+                 data:JSON.stringify(payer),
+                 headers:{"Content-Type":"application/json","Accept-Language":"en_US","Authorization":authorization}
+                 });
+             
+             }
+             try{
+                 return postApproval();
+             }
+             catch(err){
+                 if (err.name == 401){
+                     cookie.remove('paypal_token');
+                     return postApproval();
+                 }
+                 else{
+                     throw err;
+                 }
+             };
+    ```
+
+  6. Press "Save"
+  
+  
+## Run the app
+  
+Now we're ready to run the app! In your terminal window, simply type:
+
+```bash    
+  $ gulp serve
+```
+
+At this point, your application is running! You can access it at **[http://localhost:3000](http://localhost:3000)**.
+
+  
+## Code Review
+
+From this point, we only have a few steps left before we can complete our PayPal integration. Review the following code and copy it into your app in order to get your Backand app talking to PayPal.
+
+
+#### Calling Back& action to prepare a PayPal payment
+
+The method **self.charge** in file **/client/src/app/paypal/paypal.js** gets the form's data and makes a call to makePayPalPayment function which is a wrapper for the Backand Action -PayPalPayment ,
+we created earlier on step 2. This  sets up a payment in PayPal, by getting the PayPal token and calling the PayPal payment API (more on this in a moment).
+The first payment object that PayPal return contains the url of the user confirm payment form in PayPal, the on-demand action -PayPalPayment will return this url and the code redirect the user to PayPal confirmations form 
+
+```javascript
+  self.charge = function () {
+        self.error = "";
+        self.success = "";
+  
+        //get the form's data
+        var form = angular.element(document.querySelector('#paypal-form'))[0];
+  
+        //Call Backand action to prepare the payment
+        var paypalUrl = BackandService.makePayPalPayment(form.amount.value)
+          .then(function (payment) {
+            var paypalResponse = payment;
+            //redirect to PayPal - for user approval of the payment
+            $window.location.href = paypalResponse.data;
+          })
+          .catch(function (err) {
+            if (err.type) {
+              self.error = 'PayPal error: ' + err.message;
+            } else {
+              self.error = 'Other error occurred, possibly with your API' + err.message;
+            }
+          });
+      }
+```
+After the user confirm the payment in PayPal , PayPal then redirect to this page again but now it adds the payments details to the query string, these parameters should be sent again to PayPal to conclude the payment( which is done by using makePayPalApproval Backand service and the Backand Action from step 3 )
+```javascript
+//check if this is a redirect from PayPal , after the user approves the payment
+    // PayPal adds PayerID and  paymentId to the return url we give them
+    if ($location.search().PayerID && $location.search().paymentId) {
+
+      //Call Backand action to approve the payment by the facilitator
+      BackandService.makePayPalApproval($location.search().PayerID, $location.search().paymentId)
+        .then(function (payment) {
+          // remove PayPal query string from url
+          $location.url($location.path());
+          self.success = 'successfully submitted payment for $' + payment.data.transactions[0].amount.total;
+        }
+      )
+    }
+```
+#### Backand Service to Call an On-Demand Action
+
+The method **factory.makePayPalPayment** in the file **/client/src/common/services/backandService.js** calls the on-demand action -PayPalPayment we declared earlier in step 2. You must send the parameter **amount**, though you can send additional parameters as needed.
+
+```javascript
+  factory.makePayPalPayment = function(amount){
+      return $http({
+        method: 'GET',
+        url: Backand.getApiUrl()  +  '/1/objects/action/items/1?name=PayPalPayment',
+        params:{
+          parameters:{
+            amount: amount
+          }
+        }
+      });
+    }
+```
+
+The method **factory.makePayPalApproval** in the file **/client/src/common/services/backandService.js** calls the on-demand action -PayPalApproval we declared earlier in step 3. You must send the parameters **payerId** and **paymentId** which PayPal implanted in the return url after the user confirms the payment in PayPal site 
+```javascript
+  factory.makePayPalApproval = function(payerId,paymentId){
+       return $http({
+         method: 'GET',
+         url: Backand.getApiUrl() +  '/1/objects/action/items/1?name=PayPalApproval',
+         params:{
+           parameters:{
+             payerId: payerId,
+             paymentId:paymentId
+           }
+         }
+       });
+     }
+```
 
 ### License
 
