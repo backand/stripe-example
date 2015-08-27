@@ -5,7 +5,7 @@
 
     var factory = {};
 
-    factory.listOfObjects = function() {
+    factory.listOfObjects = function () {
       return $http({
         method: 'GET',
         url: Backand.getApiUrl() + '/1/table/config',
@@ -18,10 +18,10 @@
       });
     };
 
-    factory.objectData = function(name, pageSize, pageNumber, sort, filter) {
+    factory.objectData = function (name, pageSize, pageNumber, sort, filter) {
       return $http({
         method: 'GET',
-        url: Backand.getApiUrl() +  '/1/objects/' + name,
+        url: Backand.getApiUrl() + '/1/objects/' + name,
         params: {
           pageSize: pageSize || 5,
           pageNumber: pageNumber || 1,
@@ -32,12 +32,13 @@
     };
 
     //Call makePayment on demand action
-    factory.makePayment = function(amount, token){
+    factory.makePayment = function (amount, token) {
       return $http({
         method: 'GET',
-        url:  Backand.getApiUrl() + '/1/objects/action/items?name=makePayment',//
-        params:{
-          parameters:{
+        url: Backand.getApiUrl() + '/1/objects/action/items',//
+        params: {
+          name: 'makePayment',
+          parameters: {
             token: token,
             amount: amount
           }
@@ -45,12 +46,13 @@
       });
     };
     //Call PayPalPayment on demand action
-    factory.makePayPalPayment = function(amount){
+    factory.makePayPalPayment = function (amount) {
       return $http({
         method: 'GET',
-        url: Backand.getApiUrl()  +  '/1/objects/action/items/1?name=PayPalPayment',
-        params:{
-          parameters:{
+        url: Backand.getApiUrl() + '/1/objects/action/items',
+        params: {
+          name: 'PayPalPayment',
+          parameters: {
             amount: amount
           }
         }
@@ -58,14 +60,15 @@
     };
 
     //Call PayPalApproval on demand action
-    factory.makePayPalApproval = function(payerId,paymentId){
+    factory.makePayPalApproval = function (payerId, paymentId) {
       return $http({
         method: 'GET',
-        url: Backand.getApiUrl() +  '/1/objects/action/items/1?name=PayPalApproval',
-        params:{
-          parameters:{
+        url: Backand.getApiUrl() + '/1/objects/action/items',
+        params: {
+          name: 'PayPalApproval',
+          parameters: {
             payerId: payerId,
-            paymentId:paymentId
+            paymentId: paymentId
           }
         }
       });
@@ -74,6 +77,6 @@
 
   }
 
-  angular.module('common.services.backand',[])
-    .factory('BackandService', ['$http','Backand', backandService]);
+  angular.module('common.services.backand', [])
+    .factory('BackandService', ['$http', 'Backand', backandService]);
 })();
