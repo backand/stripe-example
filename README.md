@@ -219,7 +219,6 @@ Use the following steps to add an on-demand action that registers a payment with
     ```javascript
       //Secret key and ClientId - copy from your PayPal account click on the app here https://developer.paypal.com/developer/applications/  
       //or use Backand's test account
-      // for paying , use can use the account credentials  username:paypalTest1@backand.com password:12345678 
       var paypalUrl='https://api.sandbox.paypal.com/';
     	var getAccessToken = function(){
                 var token = cookie.get('paypal_token'); 
@@ -391,7 +390,8 @@ Now we're ready to run the app! In your terminal window, simply type:
 
 At this point, your application is running! You can access it at **[http://localhost:3000](http://localhost:3000)**.
 
-  
+When redirected to PayPal site use this credentials 
+username:paypalTest1@backand.com password:12345678 
 ## Code Review
 
 From this point, we only have a few steps left before we can complete our PayPal integration. Review the following code and copy it into your app in order to get your Backand app talking to PayPal.
