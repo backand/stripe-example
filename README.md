@@ -57,9 +57,11 @@ Below we'll configure your Backand application. To get started:
 1. Log in to [Backand](https://www.backand.com) using your admin login information
 2. Open the application that you created in the previous section.
 
+### For Paypal integration please see [here](#paypal)
+
 # Stripe
 
-For Paypal integration please see [here](#paypal)
+
  
 ### Backand Action
 
