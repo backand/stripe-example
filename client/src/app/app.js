@@ -11,8 +11,8 @@
     $logProvider.debugEnabled(true);
 
     BackandProvider.manageDefaultHeaders();
-    BackandProvider.setAppName('integration');
-    BackandProvider.setAnonymousToken('4f81b419-e533-4f2b-8d2d-86fda2824b90');
+    BackandProvider.setAppName('Your-App-Name');
+    BackandProvider.setAnonymousToken('Your-Anonymous-Token');
 
     $httpProvider.interceptors.push('httpInterceptor');
     $stateProvider

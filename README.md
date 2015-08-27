@@ -167,7 +167,7 @@ The method **factory.makePayment** in the file **/client/src/common/services/bac
  factory.makePayment = function (amount, token) {
       return $http({
         method: 'GET',
-        url: Backand.getApiUrl() + '/1/objects/action/items',//
+        url: Backand.getApiUrl() + '/1/objects/action/items',
         params: {
           name: 'makePayment',
           parameters: {
@@ -218,8 +218,6 @@ Use the following steps to add an on-demand action that registers a payment with
   5. **JavaScript Code:** Past this code under the `// write your code here` comment, and before the `return {}` command
 
     ```javascript
-    function backandCallback(userInput, dbRow, parameters, userProfile) {
-      // write your code here
     
       var paypalUrl = 'https://api.sandbox.paypal.com/';
       var getAccessToken = function () {
@@ -305,7 +303,7 @@ Use the following steps to add an on-demand action that registers a payment with
   6. Replace the following items in the code above with your specific application configuration
     1. PayPal ClientId and Secret
     2. The return_url and cancel_url you want PayPal to return to after the user approves/declines the payment in PayPal pages
-    3. currency ( can be use as a parameter)
+    3. currency ( can be used as a parameter)
     4. When moving to production , need to replace PayPal sandbox url with the live one
   7. Press "Save"
   
