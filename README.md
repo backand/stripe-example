@@ -69,28 +69,28 @@ Use the following steps to add an on-demand action that registers a payment with
   4. **Input Parameters:** amount, token
   5. **JavaScript Code:** Past this code under the `// write your code here` comment, and before the `return {}` command
 
-    ```javascript
-      //Secret key - copy from your Stripe account https://dashboard.stripe.com/account/apikeys
-      //or use Backand's test account
-      var user = btoa("sk_test_hx4i19p4CJVwJzdf7AajsbBr:");
-              
-      response = $http({
-        method: "POST",
-        url: "https://api.stripe.com/v1/charges",
-        params: {
-            "amount":parameters.amount,
-            "currency":"usd",
-            "source": parameters.token
-        },
-        headers: {
-            "Authorization": "Basic " + user,
-            "Accept" : "application/json",
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-      });
-      
-    return {"data":response};
-    ```
+```javascript
+  //Secret key - copy from your Stripe account https://dashboard.stripe.com/account/apikeys
+  //or use Backand's test account
+  var user = btoa("sk_test_hx4i19p4CJVwJzdf7AajsbBr:");
+
+  response = $http({
+    method: "POST",
+    url: "https://api.stripe.com/v1/charges",
+    params: {
+        "amount":parameters.amount,
+        "currency":"usd",
+        "source": parameters.token
+    },
+    headers: {
+        "Authorization": "Basic " + user,
+        "Accept" : "application/json",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+  });
+
+return {"data":response};
+```
 
   5. Press "Save"
   
